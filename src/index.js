@@ -11,23 +11,26 @@ import ReactDOM from 'react-dom';
 // };
 
 class App extends React.Component {
-    // eslint-disable-next-line no-useless-constructor
-    constructor(props) {
-        //super is a reference to the parent constructor function
-        super(props);
+    state = {lat: null, errorMessage: ""};
 
-        this.state = { lat: null };
+    componentDidMount() {
+        window.navigator.geolocation.getCurrentPosition(
+            (position) => this.setState({ lat: position.coords.latitude }),
+            (err) => this.setState({errorMessage: err.message})
+        );
     }
-    
-    
+
     //React requires that we have a render method
     render() {
-        window.navigator.geolocation.getCurrentPosition(
-            (position) => console.log(position),
-            (err) => console.log(err)
-        );
+        if (this.state.errorMessage && !this.state.lat) {
+            return <div>Error: {this.state.errorMessage}</div>
+        }
 
-        return <div>Latitude: {this.state.lat}</div>;
+        if (!this.state.errorMessage && this.state.lat) {
+            return <div>Latitude: {this.state.lat}</div>
+        }
+
+        return <div>Loading!</div>
     }
 };
 
